@@ -7,30 +7,13 @@ class Game:
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
+        self.board = Board()
     
     def new_round(self): # Returns word from answer list
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
-    
-    def make_board(self):
-        """
-        Creates an empty game board (visualization)
-        """
-
-        board = [[] for x in range(6)]
-
-        for i in range(6):
-            round_no = i+1 # Number of guess at the start of row
-            board[i].append(f'{round_no}|')
-            for j in range(5): # Adds the cells to each row
-                board[i].append(f'   {self.player_guesses[i][j]}|')
-            # board[i].append(f'   {self.hints[i]}')
-
-        board.insert(0, '-'*30) # First row of ---
-        board.append('-'*30) # Last row of ---
-
-        return board
+        self.board = Board()
     
     def guess(self, tries):
         word = ''
@@ -50,11 +33,12 @@ class Game:
             else:
                 hint += f'{chr(10006)} ' # Letter is not in word (x)
         
-        tries = 6
+        tries = 5
         for i in range(6):
             if self.player_guesses[i] == '     ':
-                tries = i-1
+                tries = i
         self.hints[tries] = hint
+        self.board.add_word(player_guess, hint)
     
     def win_message(self): # Prints win message depending on number of guesses it took to find word
         tries = 7
@@ -63,31 +47,49 @@ class Game:
                 tries = i
 
         if tries == 6:
-            print(f'Phew.')
+            print('\t\t  Phew.')
         elif tries == 5:
-            print('Great.')
+            print('\t\t  Great.')
         elif tries == 4:
-            print('Splendid.')
+            print('\t\t  Splendid.')
         elif tries == 3:
-            print('Impressive.')
+            print('\t\t  Impressive.')
         elif tries == 2:
-            print('Magnificent.')
+            print('\t\t  Magnificent.')
         elif tries == 1:
-            print('Genius.')
+            print('\t\t  Genius.')
         else:
-            print(f'You lost. The word was {self.mystery_word}')
+            print(f'\t\t  You lost. The word was {self.mystery_word}')
     
     def play_game(self): # Simulates round of wordle
         self.new_round()
-        print('Guess the 5 letter word!')
-        guess_number = 1
+        print('\t\t  Guess the 5 letter word!')
 
         for i in range(6):
             self.guess(i)
             self.check_guess(self.player_guesses[i])
-            print_board(self.make_board())
+            print('\n\n')
+            self.board.print_board()
         
         self.win_message()
+
+class Board:
+    def __init__(self):
+        self.board = [[], [], [], [], [], []]
+        self.guesses = 0
+    
+    def add_word(self, word, hint):
+        self.board[self.guesses].append('|')
+        for i in range(5):
+            self.board[self.guesses].append(f'  {word[i]}  |')
+        self.board[self.guesses].append(f'\t [{hint}]')
+        self.guesses += 1
+    
+    def print_board(self):
+        print('\t\t' + '-'*31)
+        for i in range(self.guesses):
+            print('\t\t' + ''.join(self.board[i]))
+            print('\t\t' + '-'*31)
 
 class Player:
     def __init__(self, name):
@@ -101,9 +103,5 @@ def word_reader(filename): # Reads a text file and generates set containing its 
     
     return dic
 
-def print_board(board):
-    for line in board:
-        print(''.join(line))
-
-wordle = Game()
-wordle.play_game()
+game = Game()
+game.play_game()
