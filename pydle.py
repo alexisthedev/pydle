@@ -7,6 +7,7 @@ class Game:
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
+        self.wrong_letters = []
         self.tries = 0
         self.board = Board()
     
@@ -14,6 +15,7 @@ class Game:
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
+        self.wrong_letters = []
         self.tries = 0
         self.board = Board()
     
@@ -26,14 +28,20 @@ class Game:
         self.player_guesses[self.tries] = word
     
     def check_guess(self, player_guess):
+        letters = list(self.mystery_word)
         hint = ''
         for i in range(len(player_guess)):
-            if player_guess[i] == self.mystery_word[i]:
+            if player_guess[i] == self.mystery_word[i] and player_guess[i] in letters:
                 hint += f'{chr(10004)} ' # Letter in correct spot (checkmark)
-            elif player_guess[i] in self.mystery_word:
+                letters.remove(player_guess[i])
+            elif player_guess[i] in self.mystery_word and player_guess[i] in letters:
                 hint += f'{chr(10033)} ' # Letter is in word (asterisk)
+                letters.remove(player_guess[i])
             else:
                 hint += f'{chr(10006)} ' # Letter is not in word (x)
+                if player_guess[i] not in self.wrong_letters and player_guess[i] not in self.mystery_word:
+                    self.wrong_letters.append(player_guess[i])
+                    self.wrong_letters.sort()
         
         self.hints[self.tries] = hint
         self.board.add_word(player_guess, hint)
@@ -55,7 +63,6 @@ class Game:
             print(f'\t\t  You lost. The word was {self.mystery_word}')
     
     def play_game(self): # Simulates round of wordle
-        self.new_round()
         print('\t\t  Guess the 5 letter word!')
 
         for i in range(6):
@@ -63,6 +70,7 @@ class Game:
             self.check_guess(self.player_guesses[i])
             print('\n\n')
             self.board.print_board()
+            print(f'\t\t Letters not in word: {self.wrong_letters}')
 
             if self.player_guesses[self.tries] == self.mystery_word:
                 break
@@ -80,7 +88,7 @@ class Board:
         self.board[self.guesses].append('|')
         for i in range(5):
             self.board[self.guesses].append(f'  {word[i]}  |')
-        self.board[self.guesses].append(f'\t [{hint}]')
+        self.board[self.guesses].append(f'\t [ {hint}]')
         self.guesses += 1
     
     def print_board(self):
