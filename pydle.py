@@ -60,7 +60,7 @@ class Game:
         elif self.tries == 0:
             print('\t\t  Genius.')
         else:
-            print(f'\t\t  You lost. The word was {self.mystery_word}')
+            print(f'\t\t  You lost. The word was {self.mystery_word}\n\n')
     
     def play_game(self): # Simulates round of wordle
         print('\t\t  Guess the 5 letter word!')
@@ -110,4 +110,27 @@ def word_reader(filename): # Reads a text file and generates set containing its 
     return dic
 
 game = Game()
-game.play_game()
+testboard = Board()
+testboard.add_word('WEARY', f'{chr(10004)} {chr(10033)} {chr(10033)} {chr(10033)} {chr(10006)} ')
+
+# <--- Introduction Message & Game Rules --->
+print('\n\n\t\t[PYDLE]')
+print('\nWelcome to Pydle! A Wordle clone in python!\n')
+print('\t\t[RULES]\n')
+print('Guess the mystery 5 letter word in at most 6 guesses!')
+print('For each letter in your guess, get a character hinting at information on its respective letter:')
+print(f' - {chr(10004)} means that the letter is in the correct spot.')
+print(f' - {chr(10033)} means that the letter is in the word, but in another position.')
+print(f' - {chr(10006)} means that the letter is not in the word.')
+print(f'For example, if the mystery word was WATER then a guess of WEARY would return these hints\n\n')
+testboard.print_board()
+input('\n\nAre you ready? Enter anything to continue.')
+print('\n\n')
+
+# <--- Actual Game --->
+while True:
+    game.play_game()
+    ans = input('Enter any input to play again, enter "N" to exit.\n\n').upper()
+    if ans == 'N':
+        break
+    game.new_round()
