@@ -1,4 +1,5 @@
 import random
+import os
 
 class Game:
     def __init__(self):
@@ -69,6 +70,7 @@ class Game:
             self.guess()
             self.check_guess(self.player_guesses[i])
             print('\n\n')
+            clear()
             self.board.print_board()
             print(f'\t\t Letters not in word: {self.wrong_letters}')
 
@@ -109,6 +111,8 @@ def word_reader(filename): # Reads a text file and generates set containing its 
     
     return dic
 
+clear = lambda: os.system('cls') # Clears the command line
+
 game = Game()
 testboard = Board()
 testboard.add_word('WEARY', f'{chr(10004)} {chr(10033)} {chr(10033)} {chr(10033)} {chr(10006)} ')
@@ -125,12 +129,13 @@ print(f' - {chr(10006)} means that the letter is not in the word.')
 print(f'For example, if the mystery word was WATER then a guess of WEARY would return these hints\n\n')
 testboard.print_board()
 input('\n\nAre you ready? Enter anything to continue.')
-print('\n\n')
+clear()
 
 # <--- Actual Game --->
 while True:
     game.play_game()
     ans = input('Enter any input to play again, enter "N" to exit.\n\n').upper()
+    clear()
     if ans == 'N':
         break
     game.new_round()
