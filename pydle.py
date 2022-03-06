@@ -7,21 +7,23 @@ class Game:
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
+        self.tries = 0
         self.board = Board()
     
     def new_round(self): # Returns word from answer list
         self.mystery_word = random.choice(self.solutions)
         self.player_guesses = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
         self.hints = [' '*5, ' '*5, ' '*5, ' '*5, ' '*5, ' '*5]
+        self.tries = 0
         self.board = Board()
     
-    def guess(self, tries):
+    def guess(self):
         word = ''
         while word not in self.allowed:
             word = input().upper()
             if word not in self.allowed:
                 print('Guess not valid')
-        self.player_guesses[tries] = word
+        self.player_guesses[self.tries] = word
     
     def check_guess(self, player_guess):
         hint = ''
@@ -33,30 +35,21 @@ class Game:
             else:
                 hint += f'{chr(10006)} ' # Letter is not in word (x)
         
-        tries = 5
-        for i in range(6):
-            if self.player_guesses[i] == '     ':
-                tries = i
-        self.hints[tries] = hint
+        self.hints[self.tries] = hint
         self.board.add_word(player_guess, hint)
     
     def win_message(self): # Prints win message depending on number of guesses it took to find word
-        tries = 7
-        for i in range(6):
-            if self.player_guesses[i] == '     ':
-                tries = i
-
-        if tries == 6:
+        if self.tries == 5:
             print('\t\t  Phew.')
-        elif tries == 5:
+        elif self.tries == 4:
             print('\t\t  Great.')
-        elif tries == 4:
+        elif self.tries == 3:
             print('\t\t  Splendid.')
-        elif tries == 3:
+        elif self.tries == 2:
             print('\t\t  Impressive.')
-        elif tries == 2:
+        elif self.tries == 1:
             print('\t\t  Magnificent.')
-        elif tries == 1:
+        elif self.tries == 0:
             print('\t\t  Genius.')
         else:
             print(f'\t\t  You lost. The word was {self.mystery_word}')
@@ -66,10 +59,15 @@ class Game:
         print('\t\t  Guess the 5 letter word!')
 
         for i in range(6):
-            self.guess(i)
+            self.guess()
             self.check_guess(self.player_guesses[i])
             print('\n\n')
             self.board.print_board()
+
+            if self.player_guesses[self.tries] == self.mystery_word:
+                break
+            
+            self.tries += 1
         
         self.win_message()
 
