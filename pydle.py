@@ -144,6 +144,7 @@ ctypes.windll.kernel32.SetCurrentConsoleFontEx(
 
 
 # <--- Introduction Message & Game Rules --->
+clear()
 print('\n\n\t\t[PYDLE]')
 print('\nWelcome to Pydle! A Wordle clone in python!\n')
 print('\t\t[RULES]\n')
